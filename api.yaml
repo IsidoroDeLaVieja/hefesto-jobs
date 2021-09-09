@@ -1,0 +1,60 @@
+key: jobs
+before:
+  CacheDisabled:
+    directive: CacheDisabled
+  PropagateCorrelationId:
+    directive: PropagateCorrelationId
+after: 
+  OnError:
+    directive: OnError
+    groups:
+      - ERROR_FLOW
+  On-Queue:
+    directive: ModifyMessage
+    status: 201
+    headers: 
+      Content-Type: application/json
+    body: '{ "message" : "queued" }'
+    groups:
+      - QUEUE_FLOW
+  Log:
+    directive: Log
+    groups:
+      - AFTER_FLOW
+endpoints:
+  get /status/{id}:
+    GetJobStatus:
+      directive: GetJobStatus
+  post /http/digestion:
+    Load-Validate-Http-List:
+      directive: LoadAndValidateModel
+      source: $.message.bodyAsArray
+      target: http-list
+    Smart:
+      directive: HttpDigestion
+    First-Http:
+      directive: Push
+      headers: $.memory.http-request.headers
+      verb: $.memory.http-request.verb
+      host: $.memory.http-request.host
+      path: $.memory.http-request.path
+      body: $.memory.http-request.body
+      verify: false
+      groups:
+        - WITH_REQUEST
+    CheckRetry:
+      directive: CheckRetry
+      groups:
+        - WITH_REQUEST
+    ForTheWorker:
+      directive: ForTheWorker
+      delay: $.memory.delay
+      groups:
+        - WITH_QUEUE
+    Next-Http:
+      directive: Push
+      headers: $.memory.initial-headers
+      verb: POST
+      host: $.memory.hefesto-localhost
+      path: /jobs/http/digestion
+      body: $.memory.http-list

@@ -1,0 +1,30 @@
+{
+    "type": "array",
+    "minItems": 1,
+    "items": {
+        "type": "object",
+        "properties": {
+            "headers": {
+              "type": "object"
+            },
+            "verb": {
+              "enum": ["POST" , "PUT" , "DELETE" , "PATCH" , "GET"]
+            },
+            "host": {
+              "type": "string"
+            },
+            "path": {
+              "type": "string"
+            },
+            "body": {
+              "anyOf": [
+                { "type": "object" },
+                { "type": "string" }
+              ]
+            }
+        },
+        "required": ["verb","host","path","headers","body"],
+        "additionalProperties" : false
+    }
+}
+  
