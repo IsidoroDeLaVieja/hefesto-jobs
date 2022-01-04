@@ -29,32 +29,32 @@ endpoints:
     Load-Validate-Http-List:
       directive: LoadAndValidateModel
       source: $.message.bodyAsArray
-      target: http-list
-    Smart:
-      directive: HttpDigestion
-    First-Http:
+      target: httpList
+    SaveInitialHeaders:
+      directive: SaveInitialHeaders
+    PrepareTask:
+      directive: PrepareTask
+    ProcessTask:
       directive: Push
-      headers: $.memory.http-request.headers
-      verb: $.memory.http-request.verb
-      host: $.memory.http-request.host
-      path: $.memory.http-request.path
-      body: $.memory.http-request.body
+      headers: $.memory.httpRequest.headers
+      verb: $.memory.httpRequest.verb
+      host: $.memory.httpRequest.host
+      path: $.memory.httpRequest.path
+      body: $.memory.httpRequest.body
       verify: false
       groups:
-        - WITH_REQUEST
-    CheckRetry:
-      directive: CheckRetry
-      groups:
-        - WITH_REQUEST
+        - PROCESS_TASK
+    PrepareQueue:
+      directive: PrepareQueue
     ForTheWorker:
       directive: ForTheWorker
       delay: $.memory.delay
       groups:
         - WITH_QUEUE
-    Next-Http:
+    QueueTasks:
       directive: Push
-      headers: $.memory.initial-headers
+      headers: $.memory.initialHeaders
       verb: POST
       host: $.memory.hefesto-localhost
       path: /jobs/http/digestion
-      body: $.memory.http-list
+      body: $.memory.httpList

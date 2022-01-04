@@ -21,6 +21,18 @@
                 { "type": "object" },
                 { "type": "string" }
               ]
+            },
+            "delay": {
+              "type": "object",
+              "properties": {
+                "seconds" : {
+                  "type" : "number"
+                },
+                "key" : {
+                  "type" : "string"
+                }
+              },
+              "additionalProperties" : false
             }
         },
         "required": ["verb","host","path","headers","body"],
